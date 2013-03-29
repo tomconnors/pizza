@@ -1,0 +1,102 @@
+head
+  title pizza wars
+
+body
+  .wrapper
+    .row-fluid
+      .span4        
+        h1 
+          a(href="/") Pizza Wars
+      {{#if currentUser}}
+        .span2
+          a(href="/rank") Rank Shops
+        .span2
+          a(href="/admin") Admin
+        .span4
+          {{loginButtons align="right"}}  
+      {{else}}   
+        .span8
+          {{loginButtons align="right"}}        
+      {{/if}}
+
+    {{renderPage}}
+
+template(name="rank")
+  h2 Rank Shops
+  .row-fluid
+    .span12.center
+      .slide-container
+        .neck
+        .slide //(draggable="true")
+
+  .row-fluid
+    .span12.center
+      h4 {{currentShop}}
+        button(name="unrank") Unrank
+  .row-fluid
+    .span4
+      h4 Rankings
+      {{#each rankedShops}}
+        {{> rankedShop}}
+      {{/each}}
+    .span4
+    .span4
+      h4 Unranked Shops
+      {{#each unrankedShops}}
+        {{> unrankedShop}}
+      {{/each}}
+
+template(name="unrankedShop")
+  div
+    a.unrankedShop(href="/rank/{{_id}}") {{name}}
+
+template(name="rankedShop")
+  .rankedShop {{name}}
+
+
+
+template(name="home")
+  h2 Home
+
+template(name="admin")
+  h2 Admin Shops
+  {{#each shops}}
+    .row-fluid
+      .span3
+        label(for="shop-name-{{_id}}") Name:
+        input(type="text",value="{{name}}", id="shop-name-{{_id}}")
+      .span2
+        label(for="shop-votable-{{_id}}") Votable:
+
+        //-can't do {{#if votable}} inside the attributes list, gotta branch...
+        {{#if votable}}
+          input(
+            type="checkbox"          
+            checked
+            id="shop-votable-{{_id}}")
+        {{else}}
+          input(
+            type="checkbox"          
+            id="shop-votable-{{_id}}")
+        {{/if}}
+        
+      .span7
+        br
+        button.delete Delete
+  {{/each}}
+
+  h3 Add a Shop
+    .row-fluid
+      .span3
+        label(for="shop-add-name") Name:
+        input(type="text",value="", id="shop-add-name")
+      .span2
+        label(for="shop-add-votable") Votable:
+        input(
+          type="checkbox"          
+          id="shop-add-votable")
+      .span7        
+        button.add Add
+
+    
+
