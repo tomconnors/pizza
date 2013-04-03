@@ -25,9 +25,12 @@ template(name="rank")
   h2 Rank Shops
   .row-fluid
     .span12.center
-      .slide-container
-        .neck
-        .slide //(draggable="true")
+      input(type="number"
+        min="0"
+        max="100"
+        name="score"
+        value="{{score}}")
+
 
   .row-fluid
     .span12.center
@@ -51,7 +54,8 @@ template(name="unrankedShop")
     a.unrankedShop(href="/rank/{{_id}}") {{name}}
 
 template(name="rankedShop")
-  .rankedShop {{name}}
+  div
+    a.rankedShop(href="/rank/{{_id}}") {{name}}: {{score}}
 
 
 

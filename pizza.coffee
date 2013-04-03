@@ -15,6 +15,7 @@ if Meteor.isClient
       "rank"
 
     "/rank/:id": (id) ->
+      console.log("here")
       Session.set("currentShop", id)
       "rank"
 
@@ -27,11 +28,22 @@ if Meteor.isClient
   Template.rank.currentShop = () ->
     id = Session.get("currentShop")
     if id
-      console.log(Shops)
-      console.log(Shops.findOne({_id: id}))
       Shops.findOne({_id: id}).name        
     else
       "Pick a Shop"
+
+  Template.rank.score = () -> 
+    id = Session.get("currentShop")    
+    if id
+      _.where( Shops.findOne({_id: id}).votes, {user: Meteor.userId()} )[0]?.score ? 0
+    else
+      0
+
+  Template.rankedShop.score = () ->
+    console.log("score", @)
+    user = Meteor.userId()
+    _.first( _.where(@.votes, {user:user}) )?.score ? 0
+
 
   Template.rank.rankedShops = () ->
     query = 
@@ -41,8 +53,7 @@ if Meteor.isClient
     projection =       
       name: 1      
 
-    Shops.find query
-    
+    Shops.find query    
 
 
   Template.rank.unrankedShops = ()->
@@ -56,42 +67,94 @@ if Meteor.isClient
 
     Shops.find query, projection
 
-  Template.rank.rendered = () ->
-    slide = this.find(".slide")
-    $slide = $(slide)
-    $document = $(document)
+  Template.rank.events = 
+    "click button[name=unrank]": (event) ->
+      #delete the vote for the current shop for this user
+      selector = 
+        _id: Session.get("currentShop")
+        #"votes.user": Meteor.user()
 
-    startLeft = null
-    $slideLeft = null
+      update = 
+        $pull:
+          votes:
+            user: Meteor.userId()
 
-    $slide.on("mousedown", (event)->
-      console.log("mousedown")
-      startLeft = event.screenX
-      $slideLeft = $slide.css("left")
-      $(document).on("mousemove", drag)
-      # $document.on("mouseup", ()->
-      #   $document.off("mousemove")
-      # )
-    )
+      Shops.update selector, update
 
-    removeEvents = () ->
-      $document.off("mouseup", drag)
-      $document.off("mousemove", removeEvents)
+      #navigate to the `rank` route (with no shop)
+      Meteor.Router.to('/rank');
 
-    $document.on("mouseup", (event) ->
-      console.log("mouseup")
-      $(document).off("mousemove", drag)
-    )
+    "change input[name=score]": (event) ->
+      #update the value in the shops collection for the vote for 
+      # this shop and this user to the current value of the input
+      score = parseInt( $(event.target).val(), 10)
+      currentShop = Session.get("currentShop")
 
-    drag = (event)->
-      console.log("drag")
-      newLeft = event.screenX
-      $slide.css("left", $slideLeft + (newLeft - startLeft))
-    #top = $slide.css("top")
+      if currentShop?       
 
-    #$slide.on("drag", ()->
-    #  this.css("top", top)
-    #)
+        query = 
+          _id: currentShop
+          "votes.user": Meteor.userId()      
+
+        #todo: this is unvalidated!
+        if Shops.find(query).fetch().length
+
+          Shops.update(
+            _id: currentShop
+            "votes.user": Meteor.userId()
+          ,
+            $set:
+              "votes.$.score": score
+          )
+
+        else
+          Shops.update
+            _id: currentShop
+          ,
+            $push:
+              votes:
+                user: Meteor.userId()
+                score: score
+         
+
+
+
+  # Template.rank.rendered = () ->
+  #   slide = this.find(".slide")
+  #   $slide = $(slide)
+  #   $document = $(document)
+
+  #   startLeft = null
+  #   $slideLeft = null
+
+  #   $slide.on("mousedown", (event)->
+  #     console.log("mousedown")
+  #     startLeft = event.screenX
+  #     $slideLeft = $slide.css("left")
+  #     $(document).on("mousemove", drag)
+  #     # $document.on("mouseup", ()->
+  #     #   $document.off("mousemove")
+  #     # )
+  #   )
+
+  #   removeEvents = () ->
+  #     $document.off("mouseup", drag)
+  #     $document.off("mousemove", removeEvents)
+
+  #   $document.on("mouseup", (event) ->
+  #     console.log("mouseup")
+  #     $(document).off("mousemove", drag)
+  #   )
+
+  #   drag = (event)->
+  #     console.log("drag")
+  #     newLeft = event.screenX
+  #     $slide.css("left", $slideLeft + (newLeft - startLeft))
+  #   #top = $slide.css("top")
+
+  #   #$slide.on("drag", ()->
+  #   #  this.css("top", top)
+  #   #)
       
          
 
@@ -107,7 +170,7 @@ if Meteor.isClient
     #when the shops name is changed in the input, update the db.
     "change input[type=text]": (event) ->
       Shops.update( 
-        _id: this._id
+        _id: @._id
       ,
         $set:
           name: $(event.target).val()
@@ -115,7 +178,7 @@ if Meteor.isClient
 
     "change input[type=checkbox]": (event) ->
       Shops.update(
-        _id: this._id
+        _id: @._id
       ,
         $set:
           votable: $(event.target).is(":checked")
@@ -123,7 +186,7 @@ if Meteor.isClient
 
     "click .delete": (event) ->
       if confirm("You sure?")
-        Shops.remove(this._id)
+        Shops.remove(@._id)
 
     "click .add": (event) ->
       $name = $("#shop-add-name")
