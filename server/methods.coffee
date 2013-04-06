@@ -1,9 +1,7 @@
 # meteor methods
 
 Meteor.methods(
-  updateScore: (currentShop, score) ->
-
-    console.log("update score", currentShop, score)
+  updateScore: (currentShop, score) ->    
 
     if currentShop?       
 

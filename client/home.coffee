@@ -50,9 +50,9 @@ Meteor.startup () ->
             enabled: true
             color: '#000000'
             connectorColor: '#000000'
-            # formatter: () {
-            #     return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
-            # }
+            formatter: () ->
+              console.log(this)
+              '<b>' + this.key + '</b>: ' + this.y            
           }
         }
       },
@@ -66,7 +66,7 @@ Meteor.startup () ->
           # , 0)
 
           name: shop.name
-          y: shop.score / totalScores
+          y: (shop.score / totalScores) * 100
           sliced: false
         )
         # data: [
