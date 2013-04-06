@@ -9,8 +9,8 @@ coffeescript
 stylus
 jquery
 bootstrap
-router
 accounts-ui
 jade-handlebars
 accounts-password
 accounts-google
+router
