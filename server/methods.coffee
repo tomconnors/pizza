@@ -1,33 +1,31 @@
 # meteor methods
+define("server/methods", ["shops"], (Shops)->
+  Meteor.methods(
+    updateScore: (currentShop, score) ->    
 
-Meteor.methods(
-  updateScore: (currentShop, score) ->    
+      if currentShop and this.userId       
 
-    if currentShop?       
-
-      query = 
-        _id: currentShop
-        "votes.user": this.userId      
-
-      #todo: this is unvalidated!
-      if Shops.find(query).fetch().length
-
-        console.log("its there already")
-        Shops.update
+        query = 
           _id: currentShop
-          "votes.user": this.userId
-        ,
-          $set:
-            "votes.$.score": score
-        
+          "votes.user": this.userId      
 
-      else
-        console.log("not there already")
-        Shops.update
-          _id: currentShop
-        ,
-          $push:
-            votes:
-              user: this.userId
-              score: score
+        #todo: this is unvalidated!
+        if Shops.find(query).fetch().length
+          Shops.update
+            _id: currentShop
+            "votes.user": this.userId
+          ,
+            $set:
+              "votes.$.score": score
+          
+
+        else
+          Shops.update
+            _id: currentShop
+          ,
+            $push:
+              votes:
+                user: this.userId
+                score: score
+  )
 )

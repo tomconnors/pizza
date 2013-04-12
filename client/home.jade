@@ -3,23 +3,28 @@ head
 
 body
   .wrapper
-    .row-fluid
-      .span4        
-        h1 
-          a(href="/") Pizza Wars
-      {{#if currentUser}}
-        .span2
-          a(href="/rank") Rank Shops
-        .span2
-          a(href="/admin") Admin
-        .span4
-          {{loginButtons align="right"}}  
-      {{else}}   
-        .span8
-          {{loginButtons align="right"}}        
-      {{/if}}
+    {{> menu}}    
 
-    {{renderPage}}
+    {{#isolate}}
+      {{renderPage}}
+    {{/isolate}}
+
+template(name="menu")
+  .row-fluid
+    .span4        
+      h1 
+        a(href="/") Pizza Wars
+    {{#if currentUser}}
+      .span2
+        a(href="/rank") Rank Shops
+      .span2
+        a(href="/admin") Admin
+      .span4
+        {{loginButtons align="right"}}  
+    {{else}}   
+      .span8
+        {{loginButtons align="right"}}        
+    {{/if}}
 
 template(name="rank")
   h2 Rank Shops
@@ -59,7 +64,7 @@ template(name="rankedShop")
 
 
 
-template(name="home")
+template(name="index")
   h2 Home
   .pie-container
 

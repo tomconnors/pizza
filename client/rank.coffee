@@ -1,76 +1,77 @@
 # rank template js
-
-Template.rank.currentShop = () ->
-  id = Session.get("currentShop")
-  if id
-    Shops.findOne({_id: id}).name        
-  else
-    "Pick a Shop"
-
-Template.rank.score = () -> 
-  id = Session.get("currentShop")    
-  if id
-    _.where( Shops.findOne({_id: id}).votes, {user: Meteor.userId()} )[0]?.score ? 0
-  else
-    0
-
-Template.rankedShop.score = () ->
-  console.log("score", @)
-  user = Meteor.userId()
-  _.first( _.where(@.votes, {user:user}) )?.score ? 0
+define("client/rank", ["shops"], (Shops) ->
 
 
-Template.rank.rankedShops = () ->
-  query = 
-    votable: true
-    "votes.user": Meteor.userId()
+  Template.rank.currentShop = () ->
+    id = Session.get("currentShop")
+    if id
+      Shops.findOne({_id: id}).name        
+    else
+      "Pick a Shop"
 
-  projection =       
-    name: 1      
+  Template.rank.score = () -> 
+    id = Session.get("currentShop")    
+    if id
+      _.where( Shops.findOne({_id: id}).votes, {user: Meteor.userId()} )[0]?.score ? 0
+    else
+      0
 
-  Shops.find query    
-
-
-Template.rank.unrankedShops = ()->
-
-  #shit, this query was tough to figure out.
-  #is there an easier way?
-  query = 
-    votable: true
-    "votes":
-      $not:
-        $elemMatch:
-          "user": Meteor.userId()
+  Template.rankedShop.score = () ->
+    user = Meteor.userId()
+    _.first( _.where(@.votes, {user:user}) )?.score ? 0
 
 
-  projection =
-    votes: 0
+  Template.rank.rankedShops = () ->
+    query = 
+      votable: true
+      "votes.user": Meteor.userId()
 
-  Shops.find query, projection
+    projection =       
+      name: 1      
 
-Template.rank.events = 
-  "click button[name=unrank]": (event) ->
-    #delete the vote for the current shop for this user
-    selector = 
-      _id: Session.get("currentShop")
-      #"votes.user": Meteor.user()
+    Shops.find query    
 
-    update = 
-      $pull:
-        votes:
-          user: Meteor.userId()
 
-    Shops.update selector, update
+  Template.rank.unrankedShops = ()->
 
-    #navigate to the `rank` route (with no shop)
-    Meteor.Router.to('/rank');
+    #shit, this query was tough to figure out.
+    #is there an easier way?
+    query = 
+      votable: true
+      "votes":
+        $not:
+          $elemMatch:
+            "user": Meteor.userId()
 
-  "change input[name=score]": (event) ->
-    #update the value in the shops collection for the vote for 
-    # this shop and this user to the current value of the input
-    score = parseInt( $(event.target).val(), 10)
-    currentShop = Session.get("currentShop")
 
-    Meteor.call("updateScore", currentShop, score)
+    projection =
+      votes: 0
 
+    Shops.find query, projection
+
+  Template.rank.events = 
+    "click button[name=unrank]": (event) ->
+      #delete the vote for the current shop for this user
+      selector = 
+        _id: Session.get("currentShop")
+        #"votes.user": Meteor.user()
+
+      update = 
+        $pull:
+          votes:
+            user: Meteor.userId()
+
+      Shops.update selector, update
+
+      #navigate to the `rank` route (with no shop)
+      Meteor.Router.to('/rank');
+
+    "change input[name=score]": (event) ->
+      #update the value in the shops collection for the vote for 
+      # this shop and this user to the current value of the input
+      score = parseInt( $(event.target).val(), 10)
+      currentShop = Session.get("currentShop")
+
+      Meteor.call("updateScore", currentShop, score)
+)
        

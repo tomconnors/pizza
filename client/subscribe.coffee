@@ -1,3 +1,4 @@
 # subscribe to collections
-
-Meteor.subscribe("shops")
+define("client/subscribe", [], ()->
+  Meteor.subscribe("shops")
+)

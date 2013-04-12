@@ -1,5 +1,7 @@
 # admin js
-Meteor.startup () ->
+
+define("client/admin", ["shops"], (Shops) ->
+
   Template.admin.shops = () ->
     return Shops.find({})
 
@@ -30,8 +32,6 @@ Meteor.startup () ->
       $name = $("#shop-add-name")
       $votable = $("#shop-add-votable")
 
-      #console.log($votable.is(":checked"))
-
       Shops.insert
         name: $name.val()
         votable: $votable.is(":checked")
@@ -39,5 +39,6 @@ Meteor.startup () ->
 
       $name.val("")
       $votable.removeAttr("checked")
+)
 
 

@@ -1,18 +1,21 @@
 # router
 
-Meteor.Router.add
-  "/": "home"    
+define("client/router", [], () ->
+  Meteor.Router.add
+    "/": ()->
+      "index"    
 
-  "/rank": () ->
-    Session.set("currentShop", null)
-    "rank"
+    "/rank": () ->
+      Session.set("currentShop", null)
+      "rank"
 
-  "/rank/:id": (id) ->
-    Session.set("currentShop", id)
-    "rank"
+    "/rank/:id": (id) ->
+      Session.set("currentShop", id)
+      "rank"
 
-  "/admin": () ->
-    if Meteor.user() is null        
-      "home"
-    else        
-      "admin"
+    "/admin": () ->
+      if Meteor.user() is null        
+        "index"
+      else        
+        "admin"
+)

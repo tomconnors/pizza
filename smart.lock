@@ -2,12 +2,15 @@
   "meteor": {
     "git": "https://github.com/meteor/meteor.git",
     "branch": "master",
-    "commit": "cab491f3650fffc85661bca6b3cecf583410e05d"
+    "commit": "0ffea1c4c308ed24906984f99b13b8fca5a0956c"
   },
   "dependencies": {
     "basePackages": {
       "router": {},
-      "jade-handlebars": {}
+      "jade-handlebars": {},
+      "require": {
+        "path": "../../meteor-require"
+      }
     },
     "packages": {
       "router": {
@@ -19,6 +22,9 @@
         "git": "https://github.com/SimonDegraeve/meteor-jade-handlebars.git",
         "tag": "v0.2.7",
         "commit": "82f6f9ac43a68ffabe1d9b9620be2a4ca6790b56"
+      },
+      "require": {
+        "path": "../../meteor-require"
       },
       "page-js-ie-support": {
         "git": "https://github.com/tmeasday/meteor-page-js-ie-support.git",
