@@ -27,5 +27,27 @@ define("server/methods", ["shops"], (Shops)->
               votes:
                 user: this.userId
                 score: score
+
+    unrank:(shop) ->
+      Shops.update({_id: shop}, {$pull: {votes: {user: this.userId}}})
+  )
+
+  ADMINS = ['v69kN7mDT9Wsk439X']
+
+  Shops.allow(
+    insert: (userId, doc)->
+      true #for now, anyone can insert
+    remove: (userId, doc)->
+      true #same
+
+    update: (userId, doc, fieldNames, modifier)->
+      #use cases: 
+      # update shop name
+      # update shop votability      
+      #to update name or votability, you must be me
+      if ( _.contains(fieldNames, "votable") or _.contains(fieldNames, "name") ) and fieldNames.length == 1
+        _.contains(ADMINS, userId)
+      else 
+        false      
   )
 )

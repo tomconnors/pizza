@@ -2,6 +2,31 @@
 
 define("client/home", ["shops", "client/router"], (Shops) ->
 
+  Highcharts.setOptions({
+    colors: [
+      "#FF0000"
+      "#BF3030"
+      "#A60000"
+      "#FF4040"
+      "#FF7373"
+      "#FF8E00"
+      "#BF8030"
+      "#A65C00"
+      "#FFAA40"
+      "#FFC173"
+      "#FFB600"
+      "#BF9630"
+      "#A67600"
+      "#FFC840"
+      "#FFD773"
+      "#FFF100"
+      "#FFF440"
+      "#FF6700"
+      "#FF8D40"
+      "#FFAB73"
+    ]
+  })
+
   Template.index.rendered = () ->
     self = @
 
@@ -58,7 +83,7 @@ define("client/home", ["shops", "client/router"], (Shops) ->
             name: 'Shops',
             data: _.map(scoredShops, (shop) ->
               name: shop.name
-              y: (shop.score / totalScores) * 100
+              y: if shop.score then parseFloat( ( (shop.score / totalScores) * 100).toFixed(2) ) else 0
               sliced: false
             )
           }]

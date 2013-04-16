@@ -26,10 +26,10 @@ define("client/rank", ["shops"], (Shops) ->
       votable: true
       "votes.user": Meteor.userId()
 
-    projection =       
-      name: 1      
+    # sort = 
+    #   sort: ["votes.score", "asc"]    
 
-    Shops.find query    
+    Shops.find query
 
 
   Template.rank.unrankedShops = ()->
@@ -52,16 +52,17 @@ define("client/rank", ["shops"], (Shops) ->
   Template.rank.events = 
     "click button[name=unrank]": (event) ->
       #delete the vote for the current shop for this user
-      selector = 
-        _id: Session.get("currentShop")
-        #"votes.user": Meteor.user()
+      # selector = 
+      #   _id: Session.get("currentShop")
+      #   #"votes.user": Meteor.user()
 
-      update = 
-        $pull:
-          votes:
-            user: Meteor.userId()
+      # update = 
+      #   $pull:
+      #     votes:
+      #       user: Meteor.userId()
 
-      Shops.update selector, update
+      # Shops.update selector, update
+      Meteor.call("unrank", Session.get("currentShop"))
 
       #navigate to the `rank` route (with no shop)
       Meteor.Router.to('/rank');
